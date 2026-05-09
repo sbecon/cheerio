@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cheerio! Sarah Heads to London</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600;1,700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --red: #C8102E;
+      --navy: #012169;
+      --white: #FFFFFF;
+      --cream: #F7F3EE;
+      --red-dim: rgba(200,16,46,0.10);
+      --navy-dim: rgba(1,33,105,0.09);
+      --text: #16182b;
+      --muted: #5c5f7a;
+      --border: #e2ddd8;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── FLAG BAR ── */
+    .flag-bar {
+      height: 8px;
+      background: linear-gradient(90deg,
+        var(--navy) 0%,   var(--navy) 30%,
+        var(--white) 30%, var(--white) 36%,
+        var(--red)   36%, var(--red)   64%,
+        var(--white) 64%, var(--white) 70%,
+        var(--navy)  70%, var(--navy)  100%
+      );
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: var(--navy);
+      padding: 72px 24px 64px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(45deg, transparent, transparent 60px, rgba(255,255,255,0.018) 60px, rgba(255,255,255,0.018) 62px),
+        repeating-linear-gradient(-45deg, transparent, transparent 60px, rgba(255,255,255,0.018) 60px, rgba(255,255,255,0.018) 62px);
+      pointer-events: none;
+    }
+    .hero-inner { position: relative; z-index: 1; }
+
+    .hero-eyebrow {
+      font-weight: 300;
+      font-size: 0.78rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.48);
+      margin-bottom: 24px;
+    }
+    .hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--white);
+    }
+    .hero h1 .cheerio {
+      font-style: italic;
+      font-size: clamp(3.5rem, 10vw, 7.5rem);
+      color: var(--red);
+      display: block;
+    }
+    .hero h1 .subline {
+      font-size: clamp(1.5rem, 4.5vw, 3.2rem);
+      font-weight: 600;
+      display: block;
+      margin-top: 10px;
+      color: rgba(255,255,255,0.9);
+      letter-spacing: 0.02em;
+    }
+    .hero-pill {
+      display: inline-block;
+      margin-top: 32px;
+      background: var(--red);
+      color: var(--white);
+      font-weight: 500;
+      font-size: 0.86rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 10px 28px;
+      border-radius: 100px;
+    }
+
+    /* ── INTRO ── */
+    .intro {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 60px 28px 52px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .intro p {
+      font-size: 1.1rem;
+      line-height: 1.88;
+      color: var(--muted);
+      font-weight: 300;
+    }
+    .intro p + p { margin-top: 16px; }
+    .intro p strong { color: var(--text); font-weight: 500; }
+    .intro-signature {
+      margin-top: 28px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.7rem;
+      font-style: italic;
+      color: var(--navy);
+    }
+
+    /* ── SECTION HEADER ── */
+    .section-header {
+      text-align: center;
+      padding: 56px 24px 40px;
+    }
+    .section-header h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--navy);
+    }
+    .section-header .rule {
+      width: 40px; height: 3px;
+      background: var(--red);
+      margin: 14px auto 0;
+      border-radius: 2px;
+    }
+
+    /* ── EVENTS ── */
+    .events-section { padding: 0 24px 56px; }
+
+    .events-grid {
+      max-width: 860px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .event-card {
+      background: var(--white);
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 2px 20px rgba(1,33,105,0.07);
+      transition: transform 0.22s ease, box-shadow 0.22s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .event-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(1,33,105,0.13);
+    }
+    .card-ride   { border-top: 4px solid var(--red); }
+    .card-dinner { border-top: 4px solid var(--navy); }
+
+    .event-card-top { padding: 30px 30px 26px; flex: 1; }
+    .event-card-bottom {
+      border-top: 1px solid var(--border);
+      padding: 14px 30px;
+      background: var(--cream);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .event-card-bottom a {
+      font-size: 0.8rem;
+      color: var(--navy);
+      font-weight: 500;
+      text-decoration: none;
+    }
+    .event-card-bottom a:hover { text-decoration: underline; }
+    .event-card-bottom span { font-size: 0.82rem; }
+
+    .event-badge {
+      display: inline-block;
+      font-size: 0.67rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 3px;
+      margin-bottom: 16px;
+    }
+    .badge-red   { background: var(--red-dim);  color: var(--red); }
+    .badge-navy  { background: var(--navy-dim); color: var(--navy); }
+
+    .event-card h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+    .event-time {
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--red);
+      margin-bottom: 16px;
+      letter-spacing: 0.04em;
+    }
+    .event-desc {
+      font-size: 0.9rem;
+      line-height: 1.78;
+      color: var(--muted);
+      font-weight: 300;
+    }
+    .event-desc strong { color: var(--text); font-weight: 500; }
+
+    .menu-link {
+      display: inline-block;
+      margin-top: 16px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--navy);
+      text-decoration: none;
+      border-bottom: 1.5px solid var(--navy-dim);
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .menu-link:hover { color: var(--red); border-color: var(--red); }
+
+    .music-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 16px;
+      background: var(--red-dim);
+      color: var(--red);
+      font-size: 0.78rem;
+      font-weight: 500;
+      padding: 5px 12px;
+      border-radius: 100px;
+    }
+
+    /* ── TENNIS NOTE ── */
+    .tennis-wrap {
+      max-width: 860px;
+      margin: 20px auto 0;
+      padding: 0 24px 72px;
+    }
+    .tennis-note {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 16px 22px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      background: var(--white);
+    }
+    .tennis-icon { font-size: 1.4rem; flex-shrink: 0; padding-top: 2px; }
+    .tennis-text {
+      font-size: 0.87rem;
+      color: var(--muted);
+      line-height: 1.65;
+      font-weight: 300;
+    }
+    .tennis-text strong { color: var(--text); font-weight: 500; }
+
+    /* ── RSVP ── */
+    .rsvp-section {
+      background: var(--navy);
+      padding: 72px 24px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    .rsvp-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(45deg, transparent, transparent 80px, rgba(255,255,255,0.013) 80px, rgba(255,255,255,0.013) 82px);
+      pointer-events: none;
+    }
+    .rsvp-inner { max-width: 540px; margin: 0 auto; position: relative; }
+    .rsvp-section .section-header { padding-top: 0; }
+    .rsvp-section .section-header h2 { color: var(--white); }
+
+    .rsvp-form {
+      background: var(--white);
+      border-radius: 6px;
+      padding: 40px;
+      box-shadow: 0 16px 64px rgba(0,0,0,0.28);
+    }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-group { margin-bottom: 18px; }
+    .form-group label {
+      display: block;
+      font-size: 0.71rem;
+      font-weight: 600;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--navy);
+      margin-bottom: 7px;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid #ddd8d0;
+      border-radius: 4px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.93rem;
+      font-weight: 300;
+      color: var(--text);
+      background: var(--cream);
+      transition: border-color 0.18s, background 0.18s;
+      outline: none;
+      appearance: none;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--navy);
+      background: var(--white);
+    }
+    .form-group textarea { resize: vertical; min-height: 84px; }
+
+    .checkbox-group { margin-bottom: 22px; }
+    .checkbox-group .group-label {
+      display: block;
+      font-size: 0.71rem;
+      font-weight: 600;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--navy);
+      margin-bottom: 12px;
+    }
+    .checkbox-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+    .checkbox-item input[type="checkbox"] {
+      width: 17px; height: 17px;
+      margin-top: 3px;
+      accent-color: var(--navy);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .check-label { font-size: 0.9rem; line-height: 1.4; font-weight: 400; color: var(--text); }
+    .check-sub { display: block; font-size: 0.77rem; color: var(--muted); font-weight: 300; margin-top: 2px; }
+
+    .attending-toggle {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .toggle-btn {
+      flex: 1;
+      padding: 11px;
+      border: 1.5px solid var(--border);
+      border-radius: 4px;
+      background: var(--cream);
+      color: var(--muted);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .toggle-btn.active {
+      background: var(--navy);
+      border-color: var(--navy);
+      color: var(--white);
+    }
+    .toggle-btn:not(.active):hover {
+      border-color: var(--navy);
+      color: var(--navy);
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--red);
+      color: var(--white);
+      border: none;
+      border-radius: 4px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: background 0.18s, transform 0.1s;
+      margin-top: 6px;
+    }
+    .submit-btn:hover   { background: #a50d25; }
+    .submit-btn:active  { transform: scale(0.99); }
+    .submit-btn:disabled { background: #b0a9a2; cursor: not-allowed; }
+
+    .form-message {
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: 4px;
+      font-size: 0.88rem;
+      text-align: center;
+      display: none;
+    }
+    .form-message.success { background: #e6f4ea; color: #276221; display: block; }
+    .form-message.error   { background: #fce4ec; color: #a9162c; display: block; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--text);
+      color: rgba(255,255,255,0.4);
+      text-align: center;
+      padding: 30px 24px;
+      font-size: 0.8rem;
+      font-weight: 300;
+    }
+    footer em { color: var(--red); font-style: normal; }
+
+    @media (max-width: 600px) {
+      .events-grid { grid-template-columns: 1fr; }
+      .form-row    { grid-template-columns: 1fr; }
+      .rsvp-form   { padding: 28px 20px; }
+      .event-card-top    { padding: 24px 22px 20px; }
+      .event-card-bottom { padding: 14px 22px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="flag-bar"></div>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="hero-eyebrow">Saturday, May 16, 2026 &nbsp;·&nbsp; Irvine, California</p>
+      <h1>
+        <span class="cheerio">Cheerio!</span>
+        <span class="subline">Sarah Heads to London</span>
+      </h1>
+      <div class="hero-pill">Come say goodbye ✈︎</div>
+    </div>
+  </header>
+
+  <!-- INTRO -->
+  <section class="intro">
+    <p>
+      After four amazing years in Orange County, I'm heading to London to join the faculty at the London School of Economics.
+      <strong>May is my last month as an Irvine Company renter</strong>—and before I cross the pond,
+      I'd love to spend one last afternoon with all of you.
+    </p>
+    <p>
+      Come for the main event, come to sweat with me, or send regrets so we can schedule something separate before I leave.
+    </p>
+    <div class="intro-signature">— Sarah</div>
+  </section>
+
+  <!-- SECTION HEADER -->
+  <div class="section-header">
+    <h2>The Day</h2>
+    <div class="rule"></div>
+  </div>
+
+  <!-- MAIN EVENT CARDS -->
+  <section class="events-section">
+    <div class="events-grid">
+
+      <!-- GOODBYE GATHERING -->
+      <div class="event-card card-dinner">
+        <div class="event-card-top">
+          <span class="event-badge badge-navy">Main Event</span>
+          <h3>Goodbye Gathering</h3>
+          <div class="event-time">3:30 – 5:30 PM</div>
+          <p class="event-desc">
+            The main event—food and good company on the patio at Stonefire Grill.
+            <strong>Families and kids very welcome.</strong> This one is for everyone, no sweat required.
+            <br /><br />
+            I've confirmed the patio space and I cannot wait to see you all there.
+          </p>
+          <a class="menu-link" href="https://www.stonefiregrill.com/location/irvine/ca/menu/" target="_blank">
+            Browse the menu →
+          </a>
+        </div>
+        <div class="event-card-bottom">
+          <span>📍</span>
+          <a href="https://maps.google.com/?q=3966+Barranca+Pkwy+Irvine+CA+92606" target="_blank">
+            Stonefire Grill · 3966-A Barranca Pkwy, Irvine
+          </a>
+        </div>
+      </div>
+
+      <!-- RIDE CLASS -->
+      <div class="event-card card-ride">
+        <div class="event-card-top">
+          <span class="event-badge badge-red">Optional · Afternoon</span>
+          <h3>Ride Class with Vinny</h3>
+          <div class="event-time">1:30 PM · 45 minutes</div>
+          <p class="event-desc">
+            My close friend <strong>Vinny</strong> is teaching a ride class just for us. This'll be a fun opportunity to get together, enjoy some of my favorite tunes and work out! No experience required—gym clothes and exercise shoes.
+            <br /><br />
+            Free gym access included for everyone who comes.
+          </p>
+          <div class="music-tag">♪ The music is the thing — feel free to send in a song request!</div>
+        </div>
+        <div class="event-card-bottom">
+          <span>📍</span>
+          <a href="https://maps.google.com/?q=5715+Alton+Pkwy,+Irvine,+CA+92618" target="_blank">
+            Club Studio · 5715 Alton Pkwy, Irvine
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- TENNIS NOTE -->
+  <div class="tennis-wrap">
+    <div class="tennis-note">
+      <div class="tennis-icon">🎾</div>
+      <p class="tennis-text">
+        <strong>Tennis folks:</strong> Coach Joel is hosting a live ball session from <strong>9–10 AM</strong>
+        at Tustin Sports Park—same as usual. Can't wait to hit with you!
+      </p>
+    </div>
+  </div>
+
+  <!-- RSVP -->
+  <section class="rsvp-section">
+    <div class="rsvp-inner">
+      <div class="section-header">
+        <h2>RSVP</h2>
+        <div class="rule"></div>
+      </div>
+
+      <form class="rsvp-form" id="rsvpForm">
+
+        <!-- ATTENDING TOGGLE -->
+        <div class="attending-toggle">
+          <button type="button" class="toggle-btn active" id="btnYes" onclick="setAttending(true)">I'll be there 🎉</button>
+          <button type="button" class="toggle-btn" id="btnNo" onclick="setAttending(false)">Sending regrets</button>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">Your Name</label>
+            <input type="text" id="name" name="name" placeholder="Full name" required />
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="you@example.com" required />
+          </div>
+        </div>
+
+        <!-- COLLAPSIBLE: shown only when attending -->
+        <div id="attendingDetails">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="adults">Adults coming</label>
+              <select id="adults" name="adults">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5+</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="kids">Kids coming</label>
+              <select id="kids" name="kids">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4+</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="checkbox-group">
+            <span class="group-label">Which events will you join?</span>
+
+            <label class="checkbox-item">
+              <input type="checkbox" name="dinner" id="dinner" checked />
+              <span class="check-label">
+                Goodbye Gathering at Stonefire Grill
+                <span class="check-sub">3:30 – 5:30 PM · Main event · Everyone welcome</span>
+              </span>
+            </label>
+
+            <label class="checkbox-item">
+              <input type="checkbox" name="ride" id="ride" />
+              <span class="check-label">
+                Ride Class with Vinny at Club Studio
+                <span class="check-sub">1:30 PM · 45 min · Free gym access · Optional</span>
+              </span>
+            </label>
+
+            <label class="checkbox-item">
+              <input type="checkbox" name="tennis" id="tennis" />
+              <span class="check-label">
+                Tennis Live Ball with Coach Joel
+                <span class="check-sub">9:00 – 10:00 AM · Optional · Tennis folks</span>
+              </span>
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label for="dietary">Dietary restrictions or allergies (optional)</label>
+            <input type="text" id="dietary" name="dietary" placeholder="e.g. vegetarian, gluten-free, nut allergy..." />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="message">A note for me (optional)</label>
+          <textarea id="message" name="message" placeholder="A memory, a wish, or just hello..."></textarea>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn">Count me in →</button>
+        <div class="form-message" id="formMessage"></div>
+      </form>
+    </div>
+  </section>
+
+  <footer>
+    Made with <em>♥</em> with Claude
+  </footer>
+
+  <script>
+    const SCRIPT_URL = 'https://formspree.io/f/meenrljv';
+    let attending = true;
+
+    function setAttending(val) {
+      attending = val;
+      document.getElementById('btnYes').classList.toggle('active', val);
+      document.getElementById('btnNo').classList.toggle('active', !val);
+      document.getElementById('attendingDetails').style.display = val ? 'block' : 'none';
+      document.getElementById('submitBtn').textContent = val ? 'Count me in →' : 'Send regrets →';
+      document.getElementById('message').placeholder = val
+        ? 'A memory, a wish, or just hello...'
+        : 'Let me know when you\'re free and we\'ll find another time before I go!';
+    }
+
+    document.getElementById('rsvpForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('submitBtn');
+      const msg = document.getElementById('formMessage');
+      btn.disabled = true;
+      btn.textContent = 'Sending…';
+      msg.className = 'form-message';
+      msg.style.display = 'none';
+
+      const payload = {
+        attending: attending,
+        name:    document.getElementById('name').value,
+        email:   document.getElementById('email').value,
+        adults:  attending ? document.getElementById('adults').value : 0,
+        kids:    attending ? document.getElementById('kids').value : 0,
+        tennis:  attending && document.getElementById('tennis').checked,
+        ride:    attending && document.getElementById('ride').checked,
+        dinner:  attending && document.getElementById('dinner').checked,
+        dietary: attending ? document.getElementById('dietary').value : '',
+        message: document.getElementById('message').value
+      };
+
+      try {
+        const res = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.ok) {
+          msg.className = 'form-message success';
+          msg.textContent = attending
+            ? '🎉 You\'re on the list! See you on May 16th.'
+            : '💛 Regrets received—let\'s find another time before I leave.';
+          e.target.reset();
+          setAttending(true);
+        } else { throw new Error(); }
+      } catch {
+        msg.className = 'form-message error';
+        msg.textContent = 'Something went wrong—please try again or reach out to me directly.';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = attending ? 'Count me in →' : 'Send regrets →';
+        msg.style.display = 'block';
+      }
+    });
+  </script>
+
+</body>
+</html>
