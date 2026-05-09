@@ -6,7 +6,7 @@
   <title>Cheerio! Sarah Heads to London</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600;1,700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,600;0,700;1,600;1,700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
       --red: #C8102E;
@@ -70,7 +70,7 @@
       margin-bottom: 24px;
     }
     .hero h1 {
-      font-family: 'Cormorant Garamond', serif;
+      font-family: 'Lora', serif;
       font-weight: 700;
       line-height: 1;
       color: var(--white);
@@ -120,7 +120,7 @@
     .intro p strong { color: var(--text); font-weight: 500; }
     .intro-signature {
       margin-top: 28px;
-      font-family: 'Cormorant Garamond', serif;
+      font-family: 'Lora', serif;
       font-size: 1.7rem;
       font-style: italic;
       color: var(--navy);
@@ -132,7 +132,7 @@
       padding: 56px 24px 40px;
     }
     .section-header h2 {
-      font-family: 'Cormorant Garamond', serif;
+      font-family: 'Lora', serif;
       font-size: 2.2rem;
       font-weight: 700;
       color: var(--navy);
@@ -203,7 +203,7 @@
     .badge-navy  { background: var(--navy-dim); color: var(--navy); }
 
     .event-card h3 {
-      font-family: 'Cormorant Garamond', serif;
+      font-family: 'Lora', serif;
       font-size: 1.75rem;
       font-weight: 700;
       color: var(--text);
@@ -459,11 +459,13 @@
   <section class="intro">
     <p>
       After four amazing years in Orange County, I'm heading to London to join the faculty at the London School of Economics.
-      <strong>May is my last month as an Irvine Company renter</strong>—and before I cross the pond,
-      I'd love to spend one last afternoon with all of you.
+      <strong>May is my last month as an Irvine Company renter.</strong>
     </p>
     <p>
-      Come for the main event, come to sweat with me, or send regrets so we can schedule something separate before I leave.
+      Before I cross the pond, I'd love to spend one last afternoon with all of you.
+    </p>
+    <p style="margin-top: 16px; font-size: 0.9rem; color: var(--red); font-weight: 500;">
+      Please RSVP by Friday, May 15th.
     </p>
     <div class="intro-signature">— Sarah</div>
   </section>
@@ -507,13 +509,13 @@
         <div class="event-card-top">
           <span class="event-badge badge-red">Optional · Afternoon</span>
           <h3>Ride Class with Vinny</h3>
-          <div class="event-time">1:30 PM · 45 minutes</div>
+          <div class="event-time">1:15 PM · 45 minutes</div>
           <p class="event-desc">
             My close friend <strong>Vinny</strong> is teaching a ride class just for us. This'll be a fun opportunity to get together, enjoy some of my favorite tunes and work out! No experience required—gym clothes and exercise shoes.
             <br /><br />
             Free gym access included for everyone who comes.
           </p>
-          <div class="music-tag">♪ The music is the thing — feel free to send in a song request!</div>
+          <div class="music-tag">♪ Feel free to send in a song request!</div>
         </div>
         <div class="event-card-bottom">
           <span>📍</span>
@@ -604,7 +606,7 @@
               <input type="checkbox" name="ride" id="ride" />
               <span class="check-label">
                 Ride Class with Vinny at Club Studio
-                <span class="check-sub">1:30 PM · 45 min · Free gym access · Optional</span>
+                <span class="check-sub">1:15 PM · 45 min · Free gym access · Optional</span>
               </span>
             </label>
 
@@ -687,8 +689,13 @@
           msg.textContent = attending
             ? '🎉 You\'re on the list! See you on May 16th.'
             : '💛 Regrets received—let\'s find another time before I leave.';
+          const wasAttending = attending;
           e.target.reset();
-          setAttending(true);
+          if (wasAttending) {
+            setAttending(true);
+          } else {
+            setAttending(false);
+          }
         } else { throw new Error(); }
       } catch {
         msg.className = 'form-message error';
