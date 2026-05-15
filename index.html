@@ -540,8 +540,7 @@
     <div class="tennis-note">
       <div class="tennis-icon">🎾</div>
       <p class="tennis-text">
-        <strong>Tennis folks:</strong> Coach Joel is hosting a live ball session from <strong>9–10 AM</strong>
-        at Tustin Sports Park—same as usual. Can't wait to hit with you!
+        <strong>Tennis folks:</strong> We're also hosting a live ball session with Coach Joel on <strong>Saturday, May 23rd</strong>—details to follow separately.
       </p>
     </div>
   </div>
@@ -617,14 +616,7 @@
               </span>
             </label>
 
-            <label class="checkbox-item">
-              <input type="checkbox" name="tennis" id="tennis" />
-              <span class="check-label">
-                Tennis Live Ball with Coach Joel
-                <span class="check-sub">9:00 – 10:00 AM · Optional · Tennis folks</span>
-              </span>
-            </label>
-          </div>
+            </div>
 
           <div class="form-group">
             <label for="dietary">Dietary restrictions or allergies (optional)</label>
@@ -677,7 +669,7 @@
         email:   document.getElementById('email').value,
         adults:  attending ? document.getElementById('adults').value : 0,
         kids:    attending ? document.getElementById('kids').value : 0,
-        tennis:  attending && document.getElementById('tennis').checked,
+        tennis:  false,
         ride:    attending && document.getElementById('ride').checked,
         dinner:  attending && document.getElementById('dinner').checked,
         dietary: attending ? document.getElementById('dietary').value : '',
